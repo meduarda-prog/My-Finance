@@ -111,3 +111,6 @@ body {
   margin-bottom: 12px;
   font-weight: 500;
 }
+.tab {
+  display: none;
+}
