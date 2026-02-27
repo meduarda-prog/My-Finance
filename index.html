@@ -1,2 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>MyFinance</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-1
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h1 class="logo">MyFinance</h1>
+
+    <nav>
+      <button class="nav active">💰 Saldo</button>
+      <button class="nav">💳 Transações</button>
+      <button class="nav">📊 Despesas</button>
+      <button class="nav">⚙️ Configurações</button>
+    </nav>
+  </aside>
+
+  <!-- CONTEÚDO -->
+  <main class="content">
+
+    <h2 class="mes">Abril</h2>
+    <h1 class="saldo-total">R$ 3.320,00</h1>
+
+    <div class="cards">
+      <div class="card receita">
+        <span>Receitas</span>
+        <strong>R$ 2.500,00</strong>
+      </div>
+
+      <div class="card despesa">
+        <span>Despesas</span>
+        <strong>R$ 1.180,00</strong>
+      </div>
+    </div>
+
+    <div class="painel">
+      <div class="box">
+        <h3>Despesas por categoria</h3>
+        <canvas id="grafico"></canvas>
+      </div>
+
+      <div class="box">
+        <ul class="lista">
+          <li><span>Educação</span><strong>R$ 500</strong></li>
+          <li><span>Alimentação</span><strong>R$ 300</strong></li>
+          <li><span>Transporte</span><strong>R$ 230</strong></li>
+          <li><span>Academia</span><strong>R$ 120</strong></li>
+        </ul>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
