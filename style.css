@@ -14,7 +14,6 @@ body {
   height: 100vh;
 }
 
-/* SIDEBAR */
 .sidebar {
   width: 260px;
   background: linear-gradient(180deg, #7b2ff7, #5f2eea);
@@ -43,7 +42,6 @@ body {
   background: rgba(255,255,255,0.2);
 }
 
-/* CONTEÚDO */
 .content {
   flex: 1;
   padding: 40px;
@@ -90,7 +88,6 @@ body {
   color: #e83e8c;
 }
 
-/* PAINEL */
 .painel {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -104,7 +101,6 @@ body {
   box-shadow: 0 10px 25px rgba(0,0,0,0.08);
 }
 
-/* LISTA */
 .lista {
   list-style: none;
 }
