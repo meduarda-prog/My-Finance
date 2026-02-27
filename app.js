@@ -20,6 +20,7 @@ const despesasCategorias = [
   { nome: "Alimentação", valor: 300 },
   { nome: "Transporte", valor: 230 },
   { nome: "Academia", valor: 120 }
+  {nome:"Outros",valor: 0}
 ];
 function criarGraficoDespesas() {
   const ctx = document
@@ -68,8 +69,9 @@ function atualizarListaDespesas(total) {
   lista.innerHTML = "";
 
   despesasCategorias.forEach(item => {
-    const percentual = ((item.valor / total) * 100).toFixed(1);
-
+    const percentual = total > 0
+      ?((item.valor / total) * 100).toFixed(1);
+      : 0;
     const li = document.createElement("li");
     li.innerHTML = `
       <span>${item.nome}</span>
@@ -77,8 +79,19 @@ function atualizarListaDespesas(total) {
     `;
 
     lista.appendChild(li);
+
+    if (item.nome=== "Outros" && outrosDetalhes.length > 0) {
+      outrosDetalhes.forEach(d => {
+        const sub = document.createElement("li");
+        sub.style.fontSize = "14px";
+        sub.style.marginLeft = "15px";
+        sub.innerHTML = `• ${d.descricao} — R$ ${d.valor}`;
+        lista.appendChild(sub);
+      });
+    }
   });
 }
+ 
 function showTab(id) {
   document.querySelectorAll(".tab").forEach(tab => {
     tab.style.display = "none";
@@ -89,3 +102,26 @@ function showTab(id) {
 document.addEventListener("DOMContentLoaded", () => {
   criarGraficoDespesas();
 });
+function adicionarOutro() {
+  const descricao = document.getElementById("descricaoOutro").value;
+  const valor = Number(document.getElementById("valorOutro").value);
+
+  if (!descricao || !valor) {
+    alert("Preencha descrição e valor");
+    return;
+  }
+
+  // salva detalhe
+  outrosDetalhes.push({ descricao, valor });
+
+  // soma no total de Outros
+  const outros = despesasCategorias.find(c => c.nome === "Outros");
+  outros.valor += valor;
+
+  // limpa inputs
+  document.getElementById("descricaoOutro").value = "";
+  document.getElementById("valorOutro").value = "";
+
+  // recria gráfico e lista
+  criarGraficoDespesas();
+}
