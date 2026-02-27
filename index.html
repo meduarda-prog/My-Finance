@@ -20,16 +20,16 @@
     <h1 class="logo">MyFinance</h1>
 
     <nav>
-      <button class="nav active">💰 Saldo</button>
+      <button class="nav active" onclick="showTab('dashboard')">💰 Saldo</button>
       <button class="nav">💳 Transações</button>
-      <button class="nav">📊 Despesas</button>
+      <button class="nav" onclick="showTab('despesas')">📊 Despesas</button> 
       <button class="nav">⚙️ Configurações</button>
     </nav>
   </aside>
 
   <!-- CONTEÚDO -->
   <main class="content">
-
+    <section id="dashboard" class="tab active">
     <h2 class="mes">Abril</h2>
     <h1 class="saldo-total">R$ 3.320,00</h1>
 
@@ -60,7 +60,7 @@
         </ul>
       </div>
     </div>
-
+   </section>
   </main>
 </div>
 
