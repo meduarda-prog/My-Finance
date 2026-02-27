@@ -15,6 +15,70 @@ new Chart(ctx, {
     }]
   }
 });
+const despesasCategorias = [
+  { nome: "Educação", valor: 500 },
+  { nome: "Alimentação", valor: 300 },
+  { nome: "Transporte", valor: 230 },
+  { nome: "Academia", valor: 120 }
+];
+function criarGraficoDespesas() {
+  const ctx = document
+    .getElementById("graficoDespesas")
+    .getContext("2d");
+
+  const labels = despesasCategorias.map(c => c.nome);
+  const valores = despesasCategorias.map(c => c.valor);
+
+  const total = valores.reduce((soma, v) => soma + v, 0);
+
+  new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels: labels,
+      datasets: [{
+        data: valores,
+        backgroundColor: [
+          "#7b2ff7",
+          "#ff6384",
+          "#36a2eb",
+          "#ffcd56",
+          "#4bc0c0"
+        ]
+      }]
+    },
+    options: {
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const valor = context.raw;
+              const percentual = ((valor / total) * 100).toFixed(1);
+              return `${context.label}: R$ ${valor} (${percentual}%)`;
+            }
+          }
+        }
+      }
+    }
+  });
+
+  atualizarListaDespesas(total);
+}
+function atualizarListaDespesas(total) {
+  const lista = document.getElementById("listaDespesas");
+  lista.innerHTML = "";
+
+  despesasCategorias.forEach(item => {
+    const percentual = ((item.valor / total) * 100).toFixed(1);
+
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <span>${item.nome}</span>
+      <strong>R$ ${item.valor} (${percentual}%)</strong>
+    `;
+
+    lista.appendChild(li);
+  });
+}
 function showTab(id) {
   document.querySelectorAll(".tab").forEach(tab => {
     tab.style.display = "none";
@@ -22,3 +86,6 @@ function showTab(id) {
 
   document.getElementById(id).style.display = "block";
 }
+document.addEventListener("DOMContentLoaded", () => {
+  criarGraficoDespesas();
+});
