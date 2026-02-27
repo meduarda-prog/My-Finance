@@ -17,12 +17,10 @@
     <h1 class="logo">MyFinance</h1>
 
     <nav>
-      <nav>
   <button class="nav active" onclick="showTab('dashboard')">💰 Saldo</button>
   <button class="nav" onclick="showTab('transacoes')">💳 Transações</button>
   <button class="nav" onclick="showTab('despesas')">📊 Despesas</button>
   <button class="nav" onclick="showTab('config')">⚙️ Configurações</button>
-</nav>
     </nav>
   </aside>
 
@@ -58,12 +56,13 @@
         </ul>
       </div>
     </div>
+      </section>
+    
       <section id="transacoes" class="tab">
   <h2>Transações</h2>
   <p>Em construção</p>
 </section>
-<section id="despesas" class="tab">
-  <h2>Despesas</h2>
+
   <section id="despesas" class="tab">
   <h2>Despesas</h2>
 
@@ -74,20 +73,17 @@
     </div>
 
     <div class="box">
-      <ul class="lista" id="listaDespesas">
-        <!-- preenchido pelo JS depois -->
-      </ul>
+      <ul class="lista" id="listaDespesas"></ul>
     </div>
   </div>
 </section>
   
-      <section id="config" class="tab">
+ <section id="config" class="tab">
   <h2>Configurações</h2>
   <p>Em construção</p>
-</section>
-   </section>
-  </main>
-</div>
+ </section>
+  
+</main>
 
 <script src="app.js"></script>
 </body>
