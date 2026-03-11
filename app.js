@@ -1,15 +1,4 @@
-const hoje = new Date();
-
-const meses = [
-"Janeiro","Fevereiro","Março","Abril","Maio","Junho",
-"Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
-];
-
-const mesAtual = meses[hoje.getMonth()] + " " + hoje.getFullYear();
-
-document.querySelector(".mes").innerText = mesAtual;
-
-
+let grafico;
 
 let categorias = [
 {nome:"Educação",valor:0},
@@ -20,10 +9,45 @@ let categorias = [
 ];
 
 
+document.addEventListener("DOMContentLoaded",()=>{
+
+const hoje = new Date();
+
+const meses=[
+"Janeiro","Fevereiro","Março","Abril","Maio","Junho",
+"Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
+];
+
+document.querySelector(".mes").innerText =
+meses[hoje.getMonth()]+" "+hoje.getFullYear();
+
+showTab("dashboard");
+
+criarGrafico();
+
+atualizarInterface();
+
+});
+
+
+
+function showTab(id){
+
+document.querySelectorAll(".tab").forEach(tab=>{
+tab.style.display="none";
+});
+
+document.getElementById(id).style.display="block";
+
+}
+
+
+
+function criarGrafico(){
 
 const ctx = document.getElementById("grafico");
 
-let grafico = new Chart(ctx,{
+grafico = new Chart(ctx,{
 
 type:"doughnut",
 
@@ -49,11 +73,13 @@ backgroundColor:[
 
 });
 
+}
+
 
 
 function atualizarInterface(){
 
-const lista = document.getElementById("listaCategorias");
+const lista=document.getElementById("listaCategorias");
 
 lista.innerHTML="";
 
@@ -61,7 +87,7 @@ categorias.forEach((cat,i)=>{
 
 const li=document.createElement("li");
 
-li.innerText = cat.nome + " — R$ " + cat.valor;
+li.innerText=cat.nome+" — R$ "+cat.valor;
 
 li.onclick=()=>editarValor(i);
 
@@ -69,17 +95,14 @@ lista.appendChild(li);
 
 });
 
-
-
-grafico.data.datasets[0].data = categorias.map(c=>c.valor);
+grafico.data.datasets[0].data=
+categorias.map(c=>c.valor);
 
 grafico.update();
 
+const total= categorias.reduce((s,v)=>s+v.valor,0);
 
-
-const totalDespesas = categorias.reduce((s,v)=>s+v.valor,0);
-
-document.getElementById("despesaTotal").innerText="R$ "+totalDespesas;
+document.getElementById("totalDespesas").innerText="R$ "+total;
 
 }
 
@@ -87,20 +110,16 @@ document.getElementById("despesaTotal").innerText="R$ "+totalDespesas;
 
 function editarValor(index){
 
-let novo = prompt("Digite o valor para "+categorias[index].nome);
+let valor = prompt("Digite o valor para "+categorias[index].nome);
 
-if(novo===null) return;
+if(valor===null) return;
 
-novo = Number(novo);
+valor = Number(valor);
 
-if(isNaN(novo)) return;
+if(isNaN(valor)) return;
 
-categorias[index].valor = novo;
+categorias[index].valor=valor;
 
 atualizarInterface();
 
 }
-
-
-
-atualizarInterface();
