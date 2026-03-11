@@ -1,222 +1,178 @@
 const hoje = new Date();
+
 const mesAtual = hoje.getMonth();
+
 const anoAtual = hoje.getFullYear();
 
 const nomesMeses = [
-  "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
-  "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
+"Janeiro","Fevereiro","Março","Abril","Maio","Junho",
+"Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
 ];
 
 const nomeMes = nomesMeses[mesAtual];
 
+let receitas = [];
+
+let despesasCategorias = [
+{nome:"Educação",valor:0},
+{nome:"Alimentação",valor:0},
+{nome:"Transporte",valor:0},
+{nome:"Academia",valor:0},
+{nome:"Outros",valor:0}
+];
+
+let grafico;
 
 
-document.addEventListener("DOMContentLoaded", () => {
 
-  const mesElemento = document.querySelector(".mes");
+document.addEventListener("DOMContentLoaded",()=>{
 
-  if (mesElemento) {
-    mesElemento.innerText = nomeMes + " " + anoAtual;
-  }
+document.querySelector(".mes").innerText =
+nomeMes+" "+anoAtual;
 
-  showTab("dashboard");
+showTab("dashboard");
 
-  carregarDados();
+criarGrafico();
 
 });
 
 
 
-const chaveMes = `financas_${anoAtual}_${mesAtual}`;
-
-
-
-
-
-let despesasCategorias = [
-  { nome: "Educação", valor: 0 },
-  { nome: "Alimentação", valor: 0 },
-  { nome: "Transporte", valor: 0 },
-  { nome: "Academia", valor: 0 },
-  { nome: "Outros", valor: 0 }
-];
-
-let outrosDetalhes = [];
-
-let graficoDespesas = null;
-
-
-
-
-
-function salvarDados() {
-
-  const dados = {
-    categorias: despesasCategorias,
-    outros: outrosDetalhes
-  };
-
-  localStorage.setItem(chaveMes, JSON.stringify(dados));
-
-}
-
-
-
-
-
-function carregarDados() {
-
-  const dadosSalvos = localStorage.getItem(chaveMes);
-
-  if (dadosSalvos) {
-
-    const dados = JSON.parse(dadosSalvos);
-
-    despesasCategorias = dados.categorias;
-    outrosDetalhes = dados.outros;
-
-  }
-
-  criarGraficoDespesas();
-
-}
-
-
-
-
-
-function criarGraficoDespesas() {
-
-  const canvas = document.getElementById("graficoDespesas");
-
-  if (!canvas) return;
-
-  const ctx = canvas.getContext("2d");
-
-  const labels = despesasCategorias.map(c => c.nome);
-  const valores = despesasCategorias.map(c => c.valor);
-
-  const total = valores.reduce((soma,v)=> soma+v,0);
-
-  if (graficoDespesas) {
-    graficoDespesas.destroy();
-  }
-
-  graficoDespesas = new Chart(ctx,{
-
-    type:"doughnut",
-
-    data:{
-      labels:labels,
-      datasets:[{
-        data:valores,
-        backgroundColor:[
-          "#7b2ff7",
-          "#ff6384",
-          "#36a2eb",
-          "#ffcd56",
-          "#4bc0c0"
-        ]
-      }]
-    }
-
-  });
-
-  atualizarListaDespesas(total);
-
-}
-
-
-
-
-
-function atualizarListaDespesas(total){
-
-  const lista = document.getElementById("listaDespesas");
-
-  if(!lista) return;
-
-  lista.innerHTML="";
-
-  despesasCategorias.forEach(item=>{
-
-    const percentual = total>0
-      ?((item.valor/total)*100).toFixed(1)
-      :0;
-
-    const li = document.createElement("li");
-
-    li.innerHTML=`
-      <span>${item.nome}</span>
-      <strong>R$ ${item.valor} (${percentual}%)</strong>
-    `;
-
-    lista.appendChild(li);
-
-    if(item.nome==="Outros" && outrosDetalhes.length>0){
-
-      outrosDetalhes.forEach(d=>{
-
-        const sub = document.createElement("li");
-
-        sub.style.fontSize="14px";
-        sub.style.marginLeft="15px";
-
-        sub.innerHTML=`• ${d.descricao} — R$ ${d.valor}`;
-
-        lista.appendChild(sub);
-
-      });
-
-    }
-
-  });
-
-}
-
-
-
-
-
-function adicionarOutro(){
-
-  const descricao = document.getElementById("descricaoOutro").value;
-  const valor = Number(document.getElementById("valorOutro").value);
-
-  if(!descricao || !valor){
-    alert("Preencha descrição e valor");
-    return;
-  }
-
-  outrosDetalhes.push({descricao,valor});
-
-  const outros = despesasCategorias.find(c=>c.nome==="Outros");
-
-  outros.valor += valor;
-
-  document.getElementById("descricaoOutro").value="";
-  document.getElementById("valorOutro").value="";
-
-  salvarDados();
-
-  criarGraficoDespesas();
-
-}
-
-
-
-
-
 function showTab(id){
 
-  document.querySelectorAll(".tab").forEach(tab=>{
-    tab.style.display="none";
-  });
+document.querySelectorAll(".tab").forEach(tab=>{
 
-  const tab = document.getElementById(id);
+tab.style.display="none";
 
-  if(tab){
-    tab.style.display="block";
-  }
+});
+
+document.getElementById(id).style.display="block";
+
+}
+
+
+
+function adicionarReceita(){
+
+const descricao =
+document.getElementById("descricaoReceita").value;
+
+const valor =
+Number(document.getElementById("valorReceita").value);
+
+if(!descricao || !valor){
+
+alert("Preencha os campos");
+
+return;
+
+}
+
+receitas.push({descricao,valor});
+
+document.getElementById("descricaoReceita").value="";
+document.getElementById("valorReceita").value="";
+
+atualizarResumo();
+
+}
+
+
+
+function adicionarDespesa(){
+
+const descricao =
+document.getElementById("descricaoDespesa").value;
+
+const valor =
+Number(document.getElementById("valorDespesa").value);
+
+const categoria =
+document.getElementById("categoriaDespesa").value;
+
+if(!descricao || !valor){
+
+alert("Preencha os campos");
+
+return;
+
+}
+
+const cat =
+despesasCategorias.find(c=>c.nome===categoria);
+
+cat.valor += valor;
+
+document.getElementById("descricaoDespesa").value="";
+document.getElementById("valorDespesa").value="";
+
+criarGrafico();
+
+atualizarResumo();
+
+}
+
+
+
+function atualizarResumo(){
+
+const totalReceitas =
+receitas.reduce((soma,r)=>soma+r.valor,0);
+
+const totalDespesas =
+despesasCategorias.reduce((soma,d)=>soma+d.valor,0);
+
+const saldo =
+totalReceitas-totalDespesas;
+
+document.getElementById("totalReceitas").innerText =
+"R$ "+totalReceitas;
+
+document.getElementById("totalDespesas").innerText =
+"R$ "+totalDespesas;
+
+document.getElementById("saldoTotal").innerText =
+"R$ "+saldo;
+
+}
+
+
+
+function criarGrafico(){
+
+const ctx =
+document.getElementById("graficoDespesas");
+
+if(!ctx) return;
+
+const labels =
+despesasCategorias.map(c=>c.nome);
+
+const valores =
+despesasCategorias.map(c=>c.valor);
+
+if(grafico){
+grafico.destroy();
+}
+
+grafico = new Chart(ctx,{
+
+type:"doughnut",
+
+data:{
+labels:labels,
+datasets:[{
+data:valores,
+backgroundColor:[
+"#7b2ff7",
+"#ff6384",
+"#36a2eb",
+"#ffcd56",
+"#4bc0c0"
+]
+}]
+}
+
+});
 
 }
