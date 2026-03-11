@@ -1,4 +1,3 @@
-// GRAFICO DO DASHBOARD
 const ctx = document.getElementById("grafico");
 
 new Chart(ctx, {
@@ -17,8 +16,6 @@ new Chart(ctx, {
   }
 });
 
-
-// CATEGORIAS
 const despesasCategorias = [
   { nome: "Educação", valor: 500 },
   { nome: "Alimentação", valor: 300 },
@@ -27,13 +24,11 @@ const despesasCategorias = [
   { nome: "Outros", valor: 0 }
 ];
 
-// DETALHES DE OUTROS
 let outrosDetalhes = [];
 
 let graficoDespesas = null;
 
 
-// CRIAR GRAFICO DE DESPESAS
 function criarGraficoDespesas() {
 
   const canvas = document.getElementById("graficoDespesas");
@@ -47,7 +42,6 @@ function criarGraficoDespesas() {
 
   const total = valores.reduce((soma, v) => soma + v, 0);
 
-  // destruir gráfico antigo se existir
   if (graficoDespesas) {
     graficoDespesas.destroy();
   }
@@ -91,7 +85,6 @@ function criarGraficoDespesas() {
 }
 
 
-// ATUALIZAR LISTA
 function atualizarListaDespesas(total) {
 
   const lista = document.getElementById("listaDespesas");
@@ -115,7 +108,7 @@ function atualizarListaDespesas(total) {
 
     lista.appendChild(li);
 
-    // mostrar detalhes de outros
+    
     if (item.nome === "Outros" && outrosDetalhes.length > 0) {
 
       outrosDetalhes.forEach(d => {
@@ -137,8 +130,6 @@ function atualizarListaDespesas(total) {
 
 }
 
-
-// ADICIONAR DESPESA EM OUTROS
 function adicionarOutro() {
 
   const descricao = document.getElementById("descricaoOutro").value;
@@ -151,27 +142,25 @@ function adicionarOutro() {
     return;
   }
 
-  // salvar detalhe
+
   outrosDetalhes.push({
     descricao,
     valor
   });
 
-  // atualizar valor da categoria
+  
   const outros = despesasCategorias.find(c => c.nome === "Outros");
 
   outros.valor += valor;
 
-  // limpar campos
+  
   document.getElementById("descricaoOutro").value = "";
   document.getElementById("valorOutro").value = "";
 
-  // atualizar gráfico
   criarGraficoDespesas();
 }
 
 
-// TROCAR ABAS
 function showTab(id) {
 
   document.querySelectorAll(".tab").forEach(tab => {
@@ -187,7 +176,6 @@ function showTab(id) {
 }
 
 
-// INICIAR
 document.addEventListener("DOMContentLoaded", () => {
 
   criarGraficoDespesas();
