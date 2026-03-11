@@ -1,101 +1,201 @@
-let categorias = [
-{nome:"Educação",valor:0},
-{nome:"Alimentação",valor:0},
-{nome:"Transporte",valor:0},
-{nome:"Academia",valor:0},
-{nome:"Outros",valor:0}
+// -------- GRAFICO DASHBOARD --------
+
+const canvasDashboard = document.getElementById("grafico");
+
+if (canvasDashboard) {
+
+  const ctx = canvasDashboard.getContext("2d");
+
+  new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels: ["Educação", "Alimentação", "Transporte", "Academia"],
+      datasets: [{
+        data: [500, 300, 230, 120],
+        backgroundColor: [
+          "#7b2ff7",
+          "#ff6384",
+          "#36a2eb",
+          "#ffcd56"
+        ]
+      }]
+    }
+  });
+
+}
+
+
+// -------- DADOS --------
+
+const despesasCategorias = [
+  { nome: "Educação", valor: 500 },
+  { nome: "Alimentação", valor: 300 },
+  { nome: "Transporte", valor: 230 },
+  { nome: "Academia", valor: 120 },
+  { nome: "Outros", valor: 0 }
 ];
 
-let grafico;
+let outrosDetalhes = [];
 
-document.addEventListener("DOMContentLoaded",()=>{
+let graficoDespesas = null;
 
-// mês automático
-const hoje = new Date();
 
-const meses = [
-"Janeiro","Fevereiro","Março","Abril","Maio","Junho",
-"Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
-];
+// -------- CRIAR GRAFICO DESPESAS --------
 
-document.getElementById("mes").innerText =
-meses[hoje.getMonth()] + " " + hoje.getFullYear();
+function criarGraficoDespesas() {
 
-showTab("dashboard");
+  const canvas = document.getElementById("graficoDespesas");
 
-criarGrafico();
+  if (!canvas) return;
 
-atualizarLista();
+  const ctx = canvas.getContext("2d");
+
+  const labels = despesasCategorias.map(c => c.nome);
+  const valores = despesasCategorias.map(c => c.valor);
+
+  const total = valores.reduce((soma, v) => soma + v, 0);
+
+  if (graficoDespesas) {
+    graficoDespesas.destroy();
+  }
+
+  graficoDespesas = new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels: labels,
+      datasets: [{
+        data: valores,
+        backgroundColor: [
+          "#7b2ff7",
+          "#ff6384",
+          "#36a2eb",
+          "#ffcd56",
+          "#4bc0c0"
+        ]
+      }]
+    },
+    options: {
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+
+              const valor = context.raw;
+
+              const percentual = total > 0
+                ? ((valor / total) * 100).toFixed(1)
+                : 0;
+
+              return `${context.label}: R$ ${valor} (${percentual}%)`;
+
+            }
+          }
+        }
+      }
+    }
+  });
+
+  atualizarListaDespesas(total);
+
+}
+
+
+// -------- ATUALIZAR LISTA --------
+
+function atualizarListaDespesas(total) {
+
+  const lista = document.getElementById("listaDespesas");
+
+  if (!lista) return;
+
+  lista.innerHTML = "";
+
+  despesasCategorias.forEach(item => {
+
+    const percentual = total > 0
+      ? ((item.valor / total) * 100).toFixed(1)
+      : 0;
+
+    const li = document.createElement("li");
+
+    li.innerHTML = `
+      <span>${item.nome}</span>
+      <strong>R$ ${item.valor} (${percentual}%)</strong>
+    `;
+
+    lista.appendChild(li);
+
+    if (item.nome === "Outros" && outrosDetalhes.length > 0) {
+
+      outrosDetalhes.forEach(d => {
+
+        const sub = document.createElement("li");
+
+        sub.style.fontSize = "14px";
+        sub.style.marginLeft = "15px";
+
+        sub.innerHTML = `• ${d.descricao} — R$ ${d.valor}`;
+
+        lista.appendChild(sub);
+
+      });
+
+    }
+
+  });
+
+}
+
+
+// -------- ADICIONAR OUTROS --------
+
+function adicionarOutro() {
+
+  const descricao = document.getElementById("descricaoOutro").value;
+  const valor = Number(document.getElementById("valorOutro").value);
+
+  if (!descricao || !valor) {
+    alert("Preencha descrição e valor");
+    return;
+  }
+
+  outrosDetalhes.push({ descricao, valor });
+
+  const outros = despesasCategorias.find(c => c.nome === "Outros");
+
+  outros.valor += valor;
+
+  document.getElementById("descricaoOutro").value = "";
+  document.getElementById("valorOutro").value = "";
+
+  criarGraficoDespesas();
+
+}
+
+
+// -------- TROCAR ABAS --------
+
+function showTab(id) {
+
+  document.querySelectorAll(".tab").forEach(tab => {
+    tab.style.display = "none";
+  });
+
+  const tab = document.getElementById(id);
+
+  if (tab) {
+    tab.style.display = "block";
+  }
+
+}
+
+
+// -------- INICIAR APP --------
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  showTab("dashboard");
+
+  criarGraficoDespesas();
 
 });
-
-function showTab(id){
-
-document.querySelectorAll(".tab").forEach(t=>{
-t.style.display="none";
-});
-
-document.getElementById(id).style.display="block";
-
-}
-
-function criarGrafico(){
-
-const ctx = document.getElementById("grafico");
-
-grafico = new Chart(ctx,{
-
-type:"doughnut",
-
-data:{
-labels:categorias.map(c=>c.nome),
-
-datasets:[{
-data:categorias.map(c=>c.valor)
-}]
-}
-
-});
-
-}
-
-function atualizarLista(){
-
-const lista = document.getElementById("lista");
-
-lista.innerHTML="";
-
-categorias.forEach((cat,i)=>{
-
-const li = document.createElement("li");
-
-li.innerText = cat.nome + " - R$ " + cat.valor;
-
-li.onclick = ()=>editar(i);
-
-lista.appendChild(li);
-
-});
-
-grafico.data.datasets[0].data =
-categorias.map(c=>c.valor);
-
-grafico.update();
-
-}
-
-function editar(i){
-
-let valor = prompt("Digite valor para "+categorias[i].nome);
-
-if(valor===null) return;
-
-valor = Number(valor);
-
-if(isNaN(valor)) return;
-
-categorias[i].valor = valor;
-
-atualizarLista();
-
-}
