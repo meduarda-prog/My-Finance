@@ -48,11 +48,10 @@ padding:40px;
 
 .mes{
 color:#666;
-margin-bottom:10px;
 }
 
 .saldo-total{
-margin-bottom:30px;
+margin:10px 0 30px;
 }
 
 .cards{
@@ -87,42 +86,33 @@ color:#28a745;
 color:#e83e8c;
 }
 
-.box{
-background:white;
-padding:25px;
-border-radius:18px;
-box-shadow:0 10px 25px rgba(0,0,0,0.08);
-margin-bottom:30px;
-}
-
 .painel{
 display:grid;
 grid-template-columns:1fr 1fr;
 gap:30px;
 }
 
-input,select{
-width:100%;
-padding:10px;
-margin-top:10px;
-border-radius:8px;
-border:1px solid #ccc;
+.box{
+background:white;
+padding:25px;
+border-radius:18px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
 }
 
-button{
-margin-top:10px;
+.lista{
+list-style:none;
+}
+
+.lista li{
 padding:10px;
-border:none;
-border-radius:8px;
-background:#7b2ff7;
-color:white;
 cursor:pointer;
+border-bottom:1px solid #eee;
 }
 
-button:hover{
-opacity:0.9;
+.lista li:hover{
+background:#f4f4f4;
 }
 
 .tab{
-display:none;
+display:block;
 }
