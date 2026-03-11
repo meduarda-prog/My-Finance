@@ -1,31 +1,21 @@
-// -------- GRAFICO DASHBOARD --------
+const ctx = document.getElementById("grafico");
 
-const canvasDashboard = document.getElementById("grafico");
+new Chart(ctx, {
+  type: "doughnut",
+  data: {
+    labels: ["Educação", "Alimentação", "Transporte", "Academia"],
+    datasets: [{
+      data: [500, 300, 230, 120],
+      backgroundColor: [
+        "#7b2ff7",
+        "#ff6384",
+        "#36a2eb",
+        "#ffcd56"
+      ]
+    }]
+  }
+});
 
-if (canvasDashboard) {
-
-  const ctx = canvasDashboard.getContext("2d");
-
-  new Chart(ctx, {
-    type: "doughnut",
-    data: {
-      labels: ["Educação", "Alimentação", "Transporte", "Academia"],
-      datasets: [{
-        data: [500, 300, 230, 120],
-        backgroundColor: [
-          "#7b2ff7",
-          "#ff6384",
-          "#36a2eb",
-          "#ffcd56"
-        ]
-      }]
-    }
-  });
-
-}
-
-
-// -------- DADOS --------
 
 const despesasCategorias = [
   { nome: "Educação", valor: 500 },
@@ -40,8 +30,6 @@ let outrosDetalhes = [];
 let graficoDespesas = null;
 
 
-// -------- CRIAR GRAFICO DESPESAS --------
-
 function criarGraficoDespesas() {
 
   const canvas = document.getElementById("graficoDespesas");
@@ -55,6 +43,7 @@ function criarGraficoDespesas() {
 
   const total = valores.reduce((soma, v) => soma + v, 0);
 
+  // destruir gráfico antigo se existir
   if (graficoDespesas) {
     graficoDespesas.destroy();
   }
@@ -87,7 +76,6 @@ function criarGraficoDespesas() {
                 : 0;
 
               return `${context.label}: R$ ${valor} (${percentual}%)`;
-
             }
           }
         }
@@ -96,11 +84,8 @@ function criarGraficoDespesas() {
   });
 
   atualizarListaDespesas(total);
-
 }
 
-
-// -------- ATUALIZAR LISTA --------
 
 function atualizarListaDespesas(total) {
 
@@ -147,19 +132,22 @@ function atualizarListaDespesas(total) {
 }
 
 
-// -------- ADICIONAR OUTROS --------
-
 function adicionarOutro() {
 
   const descricao = document.getElementById("descricaoOutro").value;
   const valor = Number(document.getElementById("valorOutro").value);
 
   if (!descricao || !valor) {
+
     alert("Preencha descrição e valor");
+
     return;
   }
 
-  outrosDetalhes.push({ descricao, valor });
+  outrosDetalhes.push({
+    descricao,
+    valor
+  });
 
   const outros = despesasCategorias.find(c => c.nome === "Outros");
 
@@ -169,11 +157,8 @@ function adicionarOutro() {
   document.getElementById("valorOutro").value = "";
 
   criarGraficoDespesas();
-
 }
 
-
-// -------- TROCAR ABAS --------
 
 function showTab(id) {
 
@@ -190,11 +175,7 @@ function showTab(id) {
 }
 
 
-// -------- INICIAR APP --------
-
 document.addEventListener("DOMContentLoaded", () => {
-
-  showTab("dashboard");
 
   criarGraficoDespesas();
 
