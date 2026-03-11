@@ -4,6 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <title>MyFinance</title>
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link rel="stylesheet" href="style.css">
@@ -22,21 +23,13 @@
 
 <nav>
 
-<button class="nav" onclick="showTab('dashboard')">
-💰 Saldo
-</button>
+<button class="nav" onclick="showTab('dashboard')">💰 Saldo</button>
 
-<button class="nav" onclick="showTab('transacoes')">
-💳 Transações
-</button>
+<button class="nav" onclick="showTab('despesas')">📊 Despesas</button>
 
-<button class="nav" onclick="showTab('despesas')">
-📊 Despesas
-</button>
+<button class="nav">💳 Transações</button>
 
-<button class="nav" onclick="showTab('config')">
-⚙️ Configurações
-</button>
+<button class="nav">⚙️ Configurações</button>
 
 </nav>
 
@@ -45,7 +38,6 @@
 
 
 <main class="content">
-
 
 <section id="dashboard" class="tab">
 
@@ -56,64 +48,23 @@
 <div class="cards">
 
 <div class="card receita">
+
 <span>Receitas</span>
-<strong id="totalReceitas">R$ 0</strong>
+
+<strong id="receitaTotal">R$ 0</strong>
+
 </div>
 
 <div class="card despesa">
+
 <span>Despesas</span>
-<strong id="totalDespesas">R$ 0</strong>
-</div>
+
+<strong id="despesaTotal">R$ 0</strong>
 
 </div>
 
-
-<div class="box">
-
-<h3>Adicionar Receita</h3>
-
-<input id="descricaoReceita" placeholder="Descrição">
-
-<input id="valorReceita" type="number" placeholder="Valor">
-
-<button onclick="adicionarReceita()">
-Adicionar
-</button>
-
 </div>
 
-</section>
-
-
-
-
-<section id="despesas" class="tab">
-
-<h2>Despesas</h2>
-
-<div class="box">
-
-<h3>Adicionar Despesa</h3>
-
-<input id="descricaoDespesa" placeholder="Descrição">
-
-<input id="valorDespesa" type="number" placeholder="Valor">
-
-<select id="categoriaDespesa">
-
-<option>Educação</option>
-<option>Alimentação</option>
-<option>Transporte</option>
-<option>Academia</option>
-<option>Outros</option>
-
-</select>
-
-<button onclick="adicionarDespesa()">
-Adicionar
-</button>
-
-</div>
 
 
 <div class="painel">
@@ -122,44 +73,33 @@ Adicionar
 
 <h3>Despesas por categoria</h3>
 
-<canvas id="graficoDespesas"></canvas>
+<canvas id="grafico"></canvas>
 
 </div>
+
 
 
 <div class="box">
 
-<ul id="listaDespesas"></ul>
+<ul class="lista" id="listaCategorias">
+
+<li onclick="editarValor(0)">Educação — R$ 0</li>
+
+<li onclick="editarValor(1)">Alimentação — R$ 0</li>
+
+<li onclick="editarValor(2)">Transporte — R$ 0</li>
+
+<li onclick="editarValor(3)">Academia — R$ 0</li>
+
+<li onclick="editarValor(4)">Outros — R$ 0</li>
+
+</ul>
 
 </div>
 
 </div>
 
 </section>
-
-
-
-
-<section id="transacoes" class="tab">
-
-<h2>Transações</h2>
-
-<p>Em construção</p>
-
-</section>
-
-
-
-
-<section id="config" class="tab">
-
-<h2>Configurações</h2>
-
-<p>Em construção</p>
-
-</section>
-
-
 
 </main>
 
@@ -168,5 +108,4 @@ Adicionar
 <script src="app.js"></script>
 
 </body>
-
 </html>
