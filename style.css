@@ -14,15 +14,17 @@ body {
   height: 100vh;
 }
 
+/* SIDEBAR AGORA EM AZUL */
 .sidebar {
   width: 260px;
-  background: linear-gradient(180deg, #7b2ff7, #5f2eea);
+  background: linear-gradient(180deg, #1e3a8a, #3b82f6); /* Tons de Azul */
   color: white;
   padding: 30px 20px;
 }
 
 .logo {
   margin-bottom: 40px;
+  font-size: 24px;
 }
 
 .nav {
@@ -35,6 +37,7 @@ body {
   color: white;
   text-align: left;
   cursor: pointer;
+  transition: 0.3s;
 }
 
 .nav.active,
@@ -45,14 +48,17 @@ body {
 .content {
   flex: 1;
   padding: 40px;
+  overflow-y: auto;
 }
 
 .mes {
   color: #666;
+  text-transform: capitalize;
 }
 
 .saldo-total {
   margin: 10px 0 30px;
+  font-size: 32px;
 }
 
 /* CARDS */
@@ -66,27 +72,23 @@ body {
   background: white;
   padding: 20px;
   border-radius: 18px;
-  width: 200px;
+  flex: 1;
   box-shadow: 0 10px 25px rgba(0,0,0,0.08);
 }
 
 .card span {
   color: #777;
+  font-size: 14px;
 }
 
 .card strong {
   display: block;
   margin-top: 10px;
-  font-size: 20px;
+  font-size: 22px;
 }
 
-.card.receita strong {
-  color: #28a745;
-}
-
-.card.despesa strong {
-  color: #e83e8c;
-}
+.card.receita strong { color: #10b981; }
+.card.despesa strong { color: #ef4444; }
 
 .painel {
   display: grid;
@@ -101,16 +103,39 @@ body {
   box-shadow: 0 10px 25px rgba(0,0,0,0.08);
 }
 
-.lista {
-  list-style: none;
+/* FORMULÁRIOS */
+input, select {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  outline: none;
 }
 
+.btn-salvar {
+  width: 100%;
+  padding: 12px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* TABELA */
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+th { text-align: left; color: #777; font-size: 14px; padding-bottom: 10px; }
+td { padding: 12px 0; border-bottom: 1px solid #eee; }
+
+.lista { list-style: none; }
 .lista li {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 12px;
-  font-weight: 500;
+  padding: 10px 0;
+  border-bottom: 1px solid #f9f9f9;
 }
-.tab {
-  display: none;
-}
+
+.tab { display: none; }
+.tab.active { display: block; }
