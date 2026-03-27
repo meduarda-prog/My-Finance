@@ -19,72 +19,129 @@ function adicionarOutro() {
     const valor = parseFloat(document.getElementById("valorOutro").value);
     const tipo = document.getElementById("tipoLancamento").value;
     const cat = document.getElementById("categoriaLancamento").value;
+    const fixo = document.getElementById("itemFixo").checked; // Pega se é fixo
 
-    if (!desc || !valor) return alert("Preencha descrição e valor!");
+    if (!desc || isNaN(valor)) return alert("Preencha descrição e valor corretamente!");
 
-    storage.entradas.push({ desc, valor, tipo, cat, data: new Date().toISOString() });
+    storage.entradas.push({ 
+        id: Date.now(),
+        desc, 
+        valor, 
+        tipo, 
+        cat, 
+        fixo, 
+        data: new Date().toISOString() 
+    });
+
     localStorage.setItem('myFinanceDB', JSON.stringify(storage));
-
+    
     document.getElementById("descricaoOutro").value = "";
     document.getElementById("valorOutro").value = "";
+    document.getElementById("itemFixo").checked = false;
+    
     alert("Lançamento guardado!");
     renderizar();
 }
-
 function renderizar() {
-    let rec = 0;
-    let desp = 0;
-    let somaCat = { "Educação": 0, "Alimentação": 0, "Transporte": 0, "Academia": 0, "Outros": 0 };
-    
+    let rec = 0; let desp = 0; let somaCat = {};
     const lSaldo = document.getElementById("listaResumoSaldo");
-    const lDesp = document.getElementById("listaDespesasFim");
-    const lHist = document.getElementById("listaHistorico");
+    const lDesp = document.getElementById("listaDespesas") || document.getElementById("listaDespesasFim");
+    const lHist = document.getElementById("historicoGeral") || document.getElementById("listaHistorico");
 
     if (lSaldo) lSaldo.innerHTML = "";
     if (lDesp) lDesp.innerHTML = "";
     if (lHist) lHist.innerHTML = "";
 
+    const mesesNomes = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+    const hoje = new Date();
+    const chaveMesAtual = `${mesesNomes[hoje.getMonth()]} ${hoje.getFullYear()}`;
+
+    // Atualiza o nome do mês no topo do dashboard
+    const elMes = document.querySelector(".mes");
+    if (elMes) elMes.innerText = mesesNomes[hoje.getMonth()];
+
+    const transacoesPorMes = {};
+
+    // 1. ORGANIZANDO POR MÊS E REPLICANDO FIXOS
     storage.entradas.forEach(e => {
-    if (e.tipo === 'receita') {
-        rec += e.valor;
-    } else {
-        desp += e.valor;
-        // Se for "Outros", o nome no gráfico será o que você escreveu na descrição
-        const nomeParaExibir = (e.cat === "Outros") ? e.desc : e.cat;
-        somaCat[nomeParaExibir] = (somaCat[nomeParaExibir] || 0) + e.valor;
+        const d = new Date(e.data);
+        const chaveOrigem = `${mesesNomes[d.getMonth()]} ${d.getFullYear()}`;
+        
+        if (!transacoesPorMes[chaveOrigem]) transacoesPorMes[chaveOrigem] = [];
+        transacoesPorMes[chaveOrigem].push(e);
+
+        if (e.fixo) {
+            let cursor = new Date(d.getFullYear(), d.getMonth() + 1, 1);
+            while (cursor <= hoje) {
+                const chaveC = `${mesesNomes[cursor.getMonth()]} ${cursor.getFullYear()}`;
+                if (!transacoesPorMes[chaveC]) transacoesPorMes[chaveC] = [];
+                transacoesPorMes[chaveC].push({ ...e, replicado: true });
+                cursor.setMonth(cursor.getMonth() + 1);
+            }
+        }
+    });
+
+    // 2. CÁLCULOS DO MÊS ATUAL (Soma apenas o que aparece no Dashboard)
+    if (transacoesPorMes[chaveMesAtual]) {
+        transacoesPorMes[chaveMesAtual].forEach(item => {
+            if (item.tipo === 'receita') rec += item.valor;
+            else {
+                desp += item.valor;
+                const nomeExibicao = (item.cat === "Outros") ? item.desc : item.cat;
+                somaCat[nomeExibicao] = (somaCat[nomeExibicao] || 0) + item.valor;
+            }
+        });
     }
+
+    // 3. DESENHANDO AS PASTAS NO HISTÓRICO
+    const mesesOrdenados = Object.keys(transacoesPorMes).sort((a, b) => {
+        const [m1, a1] = a.split(" "); const [m2, a2] = b.split(" ");
+        return new Date(a2, mesesNomes.indexOf(m2)) - new Date(a1, mesesNomes.indexOf(m1));
+    });
 
     if (lHist) {
-        const dataObjeto = new Date(e.data);
-        const dataFormatada = dataObjeto.toLocaleDateString('pt-BR');
-        // Agora mostra Descrição + Categoria + Data
-        lHist.innerHTML += `<li>
-            <span>${e.desc} <small style="color:#888;">(${e.cat} - ${dataFormatada})</small></span>
-            <strong style="color: ${e.tipo === 'receita' ? '#28a745' : '#e83e8c'}">${formatar(e.valor)}</strong>
-        </li>`;
+        mesesOrdenados.forEach(mes => {
+            const header = document.createElement("div");
+            header.className = "mes-header"; 
+            header.innerHTML = `<span>${mes}</span> ${mes === chaveMesAtual ? '<small>(Mês Atual)</small>' : ''}`;
+            lHist.appendChild(header);
+
+            const ul = document.createElement("ul");
+            ul.className = "lista";
+
+            transacoesPorMes[mes].forEach(t => {
+                const li = document.createElement("li");
+                li.innerHTML = `
+                    <span>${t.desc} ${t.fixo ? '🔄' : ''} <small>(${t.cat})</small></span>
+                    <strong style="color: ${t.tipo === 'receita' ? '#28a745' : '#e83e8c'}">${formatar(t.valor)}</strong>
+                `;
+                ul.appendChild(li);
+            });
+            lHist.appendChild(ul);
+        });
     }
-});
 
-    document.getElementById("txtSaldoGeral").innerText = formatar(rec - desp);
-    document.getElementById("txtReceitasTotal").innerText = formatar(rec);
-    document.getElementById("txtDespesasTotal").innerText = formatar(desp);
+    // 4. ATUALIZANDO OS CARDS DE SALDO
+    const elSaldoGeral = document.querySelector(".saldo-total");
+    const elRecTotal = document.getElementById("txtReceitasTotal");
+    const elDespTotal = document.getElementById("txtDespesasTotal");
 
-   for (const c in somaCat) {
-    if (somaCat[c] > 0) {
-        // Calcula a porcentagem comparando a categoria com o total de despesas
-        const porcentagem = desp > 0 ? ((somaCat[c] / desp) * 100).toFixed(1) : 0;
-        
-        const li = `<li>
-            <span>${c}</span>
-            <strong>${formatar(somaCat[c])} <small style="font-weight:normal; color:#666;">(${porcentagem}%)</small></strong>
-        </li>`;
-        
-        if (lSaldo) lSaldo.innerHTML += li;
-        if (lDesp) lDesp.innerHTML += li;
+    if (elSaldoGeral) elSaldoGeral.innerText = formatar(rec - desp);
+    if (elRecTotal) elRecTotal.innerText = formatar(rec);
+    if (elDespTotal) elDespTotal.innerText = formatar(desp);
+
+    // 5. PREENCHENDO LISTAS DE CATEGORIAS COM PORCENTAGEM
+    for (const c in somaCat) {
+        const perc = desp > 0 ? ((somaCat[c] / desp) * 100).toFixed(1) : 0;
+        const liHtml = `<li><span>${c}</span><strong>${formatar(somaCat[c])} <small style="font-weight:normal; color:#666">(${perc}%)</small></strong></li>`;
+        if (lSaldo) lSaldo.innerHTML += liHtml;
+        if (lDesp) lDesp.innerHTML += liHtml;
     }
-}
 
-    atualizarGraficos(somaCat);
+    // 6. ATUALIZAÇÃO DOS GRÁFICOS
+    if (typeof atualizarGraficos === "function") {
+        atualizarGraficos(somaCat);
+    }
 }
 
 function atualizarGraficos(dados) {
