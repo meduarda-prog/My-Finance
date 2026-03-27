@@ -1,182 +1,134 @@
-const ctx = document.getElementById("grafico");
+// Estado global da aplicação
+let dados = JSON.parse(localStorage.getItem('myFinanceData')) || {
+    transacoes: []
+};
 
-new Chart(ctx, {
-  type: "doughnut",
-  data: {
-    labels: ["Educação", "Alimentação", "Transporte", "Academia"],
-    datasets: [{
-      data: [500, 300, 230, 120],
-      backgroundColor: [
-        "#7b2ff7",
-        "#ff6384",
-        "#36a2eb",
-        "#ffcd56"
-      ]
-    }]
-  }
-});
+let meuGrafico = null;
 
-
-const despesasCategorias = [
-  { nome: "Educação", valor: 500 },
-  { nome: "Alimentação", valor: 300 },
-  { nome: "Transporte", valor: 230 },
-  { nome: "Academia", valor: 120 },
-  { nome: "Outros", valor: 0 }
-];
-
-let outrosDetalhes = [];
-
-let graficoDespesas = null;
-
-
-function criarGraficoDespesas() {
-
-  const canvas = document.getElementById("graficoDespesas");
-
-  if (!canvas) return;
-
-  const ctx = canvas.getContext("2d");
-
-  const labels = despesasCategorias.map(c => c.nome);
-  const valores = despesasCategorias.map(c => c.valor);
-
-  const total = valores.reduce((soma, v) => soma + v, 0);
-
-  // destruir gráfico antigo se existir
-  if (graficoDespesas) {
-    graficoDespesas.destroy();
-  }
-
-  graficoDespesas = new Chart(ctx, {
-    type: "doughnut",
-    data: {
-      labels: labels,
-      datasets: [{
-        data: valores,
-        backgroundColor: [
-          "#7b2ff7",
-          "#ff6384",
-          "#36a2eb",
-          "#ffcd56",
-          "#4bc0c0"
-        ]
-      }]
-    },
-    options: {
-      plugins: {
-        tooltip: {
-          callbacks: {
-            label: function(context) {
-
-              const valor = context.raw;
-
-              const percentual = total > 0
-                ? ((valor / total) * 100).toFixed(1)
-                : 0;
-
-              return `${context.label}: R$ ${valor} (${percentual}%)`;
-            }
-          }
-        }
-      }
-    }
-  });
-
-  atualizarListaDespesas(total);
-}
-
-
-function atualizarListaDespesas(total) {
-
-  const lista = document.getElementById("listaDespesas");
-
-  if (!lista) return;
-
-  lista.innerHTML = "";
-
-  despesasCategorias.forEach(item => {
-
-    const percentual = total > 0
-      ? ((item.valor / total) * 100).toFixed(1)
-      : 0;
-
-    const li = document.createElement("li");
-
-    li.innerHTML = `
-      <span>${item.nome}</span>
-      <strong>R$ ${item.valor} (${percentual}%)</strong>
-    `;
-
-    lista.appendChild(li);
-
-    if (item.nome === "Outros" && outrosDetalhes.length > 0) {
-
-      outrosDetalhes.forEach(d => {
-
-        const sub = document.createElement("li");
-
-        sub.style.fontSize = "14px";
-        sub.style.marginLeft = "15px";
-
-        sub.innerHTML = `• ${d.descricao} — R$ ${d.valor}`;
-
-        lista.appendChild(sub);
-
-      });
-
-    }
-
-  });
-
-}
-
-
-function adicionarOutro() {
-
-  const descricao = document.getElementById("descricaoOutro").value;
-  const valor = Number(document.getElementById("valorOutro").value);
-
-  if (!descricao || !valor) {
-
-    alert("Preencha descrição e valor");
-
-    return;
-  }
-
-  outrosDetalhes.push({
-    descricao,
-    valor
-  });
-
-  const outros = despesasCategorias.find(c => c.nome === "Outros");
-
-  outros.valor += valor;
-
-  document.getElementById("descricaoOutro").value = "";
-  document.getElementById("valorOutro").value = "";
-
-  criarGraficoDespesas();
-}
-
+// Formatador de moeda
+const formatar = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
 function showTab(id) {
+    document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+    document.querySelectorAll(".nav").forEach(btn => btn.classList.remove("active"));
+    
+    document.getElementById(id).classList.add("active");
+    // Adiciona classe active no botão clicado (lógica simplificada)
+    event.currentTarget.classList.add("active");
 
-  document.querySelectorAll(".tab").forEach(tab => {
-    tab.style.display = "none";
-  });
-
-  const tab = document.getElementById(id);
-
-  if (tab) {
-    tab.style.display = "block";
-  }
-
+    if(id === 'dashboard' || id === 'transacoes') atualizarInterface();
 }
 
+function adicionarDados() {
+    const desc = document.getElementById("descLancamento").value;
+    const valor = parseFloat(document.getElementById("valorLancamento").value);
+    const tipo = document.getElementById("tipoLancamento").value;
+    const cat = document.getElementById("catLancamento").value;
 
-document.addEventListener("DOMContentLoaded", () => {
+    if (!desc || !valor) return alert("Preencha os campos!");
 
-  criarGraficoDespesas();
+    const novaTransacao = {
+        id: Date.now(),
+        descricao: desc,
+        valor: tipo === 'despesa' ? -valor : valor,
+        categoria: cat,
+        data: new Date().toISOString()
+    };
 
-});
+    dados.transacoes.push(novaTransacao);
+    localStorage.setItem('myFinanceData', JSON.stringify(dados));
+    
+    // Limpar campos
+    document.getElementById("descLancamento").value = "";
+    document.getElementById("valorLancamento").value = "";
+    
+    alert("Lançado com sucesso!");
+    atualizarInterface();
+}
+
+function atualizarInterface() {
+    const resumoCat = {};
+    let totalReceitas = 0;
+    let totalDespesas = 0;
+
+    // Processar transações
+    dados.transacoes.forEach(t => {
+        if (t.valor > 0) {
+            totalReceitas += t.valor;
+        } else {
+            totalDespesas += Math.abs(t.valor);
+            resumoCat[t.categoria] = (resumoCat[t.categoria] || 0) + Math.abs(t.valor);
+        }
+    });
+
+    // Atualizar Números
+    document.getElementById("saldoGeral").innerText = formatar(totalReceitas - totalDespesas);
+    document.getElementById("totalReceitas").innerText = formatar(totalReceitas);
+    document.getElementById("totalDespesas").innerText = formatar(totalDespesas);
+    document.getElementById("displayMes").innerText = new Intl.DateTimeFormat('pt-BR', {month: 'long'}).format(new Date());
+
+    atualizarGrafico(resumoCat);
+    atualizarTabela();
+    atualizarListaResumo(resumoCat, totalDespesas);
+}
+
+function atualizarGrafico(resumo) {
+    const ctx = document.getElementById("graficoDashboard").getContext("2d");
+    const labels = Object.keys(resumo);
+    const valores = Object.values(resumo);
+
+    if (meuGrafico) meuGrafico.destroy();
+
+    meuGrafico = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: valores,
+                backgroundColor: ["#7b2ff7", "#ff6384", "#36a2eb", "#ffcd56", "#4bc0c0", "#9966ff"]
+            }]
+        },
+        options: { plugins: { legend: { display: false } } }
+    });
+}
+
+function atualizarTabela() {
+    const corpo = document.getElementById("corpoTransacoes");
+    corpo.innerHTML = "";
+
+    dados.transacoes.reverse().forEach(t => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td style="padding:10px">${t.descricao}</td>
+            <td>${t.categoria}</td>
+            <td style="color: ${t.valor > 0 ? '#28a745' : '#e83e8c'}">${formatar(t.valor)}</td>
+            <td><button onclick="deletarItem(${t.id})" style="border:none; background:none; cursor:pointer">🗑️</button></td>
+        `;
+        corpo.appendChild(tr);
+    });
+}
+
+function atualizarListaResumo(resumo, total) {
+    const lista = document.getElementById("listaResumo");
+    lista.innerHTML = "";
+    for (let cat in resumo) {
+        const perc = ((resumo[cat] / total) * 100).toFixed(0);
+        lista.innerHTML += `<li><span>${cat}</span> <strong>${perc}%</strong></li>`;
+    }
+}
+
+function deletarItem(id) {
+    dados.transacoes = dados.transacoes.filter(t => t.id !== id);
+    localStorage.setItem('myFinanceData', JSON.stringify(dados));
+    atualizarInterface();
+}
+
+function limparDados() {
+    if(confirm("Deseja apagar TODO o histórico?")) {
+        localStorage.clear();
+        location.reload();
+    }
+}
+
+// Iniciar
+document.addEventListener("DOMContentLoaded", atualizarInterface);
