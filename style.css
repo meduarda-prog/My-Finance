@@ -5,137 +5,40 @@
   font-family: "Segoe UI", sans-serif;
 }
 
-body {
-  background: #f4f6fb;
-}
+body { background: #f4f6fb; }
+.app { display: flex; height: 100vh; }
 
-.app {
-  display: flex;
-  height: 100vh;
-}
-
-/* SIDEBAR AGORA EM AZUL */
 .sidebar {
   width: 260px;
-  background: linear-gradient(180deg, #1e3a8a, #3b82f6); /* Tons de Azul */
+  background: linear-gradient(180deg, #7b2ff7, #5f2eea); /* Seu Roxo */
   color: white;
   padding: 30px 20px;
 }
 
-.logo {
-  margin-bottom: 40px;
-  font-size: 24px;
-}
-
+.logo { margin-bottom: 40px; }
 .nav {
-  width: 100%;
-  padding: 14px;
-  margin-bottom: 12px;
-  border: none;
-  border-radius: 12px;
-  background: transparent;
-  color: white;
-  text-align: left;
-  cursor: pointer;
-  transition: 0.3s;
+  width: 100%; padding: 14px; margin-bottom: 12px; border: none;
+  border-radius: 12px; background: transparent; color: white;
+  text-align: left; cursor: pointer;
 }
+.nav.active, .nav:hover { background: rgba(255,255,255,0.2); }
 
-.nav.active,
-.nav:hover {
-  background: rgba(255,255,255,0.2);
-}
+.content { flex: 1; padding: 40px; overflow-y: auto; }
+.mes { color: #666; }
+.saldo-total { margin: 10px 0 30px; font-size: 35px; }
 
-.content {
-  flex: 1;
-  padding: 40px;
-  overflow-y: auto;
-}
+.cards { display: flex; gap: 20px; margin-bottom: 30px; }
+.card { background: white; padding: 20px; border-radius: 18px; flex: 1; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+.card.receita strong { color: #28a745; }
+.card.despesa strong { color: #e83e8c; }
 
-.mes {
-  color: #666;
-  text-transform: capitalize;
-}
+.painel { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+.box { background: white; padding: 25px; border-radius: 18px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
 
-.saldo-total {
-  margin: 10px 0 30px;
-  font-size: 32px;
-}
-
-/* CARDS */
-.cards {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 30px;
-}
-
-.card {
-  background: white;
-  padding: 20px;
-  border-radius: 18px;
-  flex: 1;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-}
-
-.card span {
-  color: #777;
-  font-size: 14px;
-}
-
-.card strong {
-  display: block;
-  margin-top: 10px;
-  font-size: 22px;
-}
-
-.card.receita strong { color: #10b981; }
-.card.despesa strong { color: #ef4444; }
-
-.painel {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 30px;
-}
-
-.box {
-  background: white;
-  padding: 25px;
-  border-radius: 18px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-}
-
-/* FORMULÁRIOS */
-input, select {
-  width: 100%;
-  padding: 12px;
-  margin: 8px 0;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  outline: none;
-}
-
-.btn-salvar {
-  width: 100%;
-  padding: 12px;
-  background: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-/* TABELA */
-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-th { text-align: left; color: #777; font-size: 14px; padding-bottom: 10px; }
-td { padding: 12px 0; border-bottom: 1px solid #eee; }
+input, select { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; }
+.btn-acao { width: 100%; padding: 12px; background: #7b2ff7; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
 
 .lista { list-style: none; }
-.lista li {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid #f9f9f9;
-}
-
+.lista li { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
 .tab { display: none; }
 .tab.active { display: block; }
