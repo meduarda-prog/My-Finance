@@ -13,77 +13,95 @@
   <aside class="sidebar">
     <h1 class="logo">MyFinance</h1>
     <nav>
-      <button class="nav active" id="btn-dashboard" onclick="showTab('dashboard')">💰 Saldo</button>
-      <button class="nav" id="btn-transacoes" onclick="showTab('transacoes')">💳 Histórico</button>
-      <button class="nav" id="btn-despesas" onclick="showTab('despesas')">📊 Lançamentos</button>
-      <button class="nav" id="btn-config" onclick="showTab('config')">⚙️ Configurações</button>
+      <button class="nav active" id="nav-dashboard" onclick="showTab('dashboard')">💰 Saldo</button>
+      <button class="nav" id="nav-transacoes" onclick="showTab('transacoes')">💳 Transações</button>
+      <button class="nav" id="nav-despesas" onclick="showTab('despesas')">📊 Despesas</button>
+      <button class="nav" id="nav-config" onclick="showTab('config')">⚙️ Configurações</button>
     </nav>
   </aside>
 
   <main class="content">
-    <section id="dashboard" class="tab active">
+    <!-- ABA SALDO (DASHBOARD) -->
+    <section id="dashboard" class="tab active" style="display: block;">
       <h2 class="mes" id="nomeMes">Abril</h2>
-      <h1 class="saldo-total" id="resumoSaldo">R$ 0,00</h1>
+      <h1 class="saldo-total" id="txtSaldoGeral">R$ 0,00</h1>
 
       <div class="cards">
         <div class="card receita">
-          <span>Receitas (Fixo + Bicos)</span>
-          <strong id="resumoReceitas">R$ 0,00</strong>
+          <span>Receitas</span>
+          <strong id="txtReceitasTotal">R$ 0,00</strong>
         </div>
         <div class="card despesa">
           <span>Despesas</span>
-          <strong id="resumoDespesas">R$ 0,00</strong>
+          <strong id="txtDespesasTotal">R$ 0,00</strong>
         </div>
       </div>
 
       <div class="painel">
         <div class="box">
-          <h3>Gráfico de Gastos</h3>
-          <canvas id="graficoDashboard"></canvas>
+          <h3>Despesas por categoria</h3>
+          <canvas id="grafico"></canvas>
         </div>
         <div class="box">
-          <ul class="lista" id="listaResumo">
-            </ul>
+          <ul class="lista" id="listaResumoSaldo">
+            <!-- Preenchido pelo JS -->
+          </ul>
         </div>
       </div>
     </section>
+    
+    <!-- ABA TRANSAÇÕES (HISTÓRICO) -->
+    <section id="transacoes" class="tab" style="display: none;">
+      <h2>Transações</h2>
+      <div class="box" style="margin-top:20px;">
+        <ul class="lista" id="listaHistorico">
+          <!-- Histórico de tudo que foi lançado -->
+        </ul>
+      </div>
+    </section>
 
-    <section id="despesas" class="tab">
-      <h2>Lançar Valor</h2>
+    <!-- ABA DESPESAS (LANÇAMENTOS) -->
+    <section id="despesas" class="tab" style="display: none;">
+      <h2>Despesas</h2>
       <div class="painel">
         <div class="box">
-          <h3>Entradas e Saídas</h3>
-          <input type="text" id="descLancamento" placeholder="Descrição (Ex: Salário, Bico, Uber)">
-          <input type="number" id="valorLancamento" placeholder="Valor (R$)">
-          <select id="tipoLancamento">
-            <option value="receita">Receita (Ganho)</option>
-            <option value="despesa">Despesa (Gasto)</option>
+          <h3>Despesas por categoria</h3>
+          <canvas id="graficoDespesas"></canvas>
+        </div>
+
+        <div class="box">
+          <ul class="lista" id="listaDespesasFim"></ul>
+          
+          <h3 style="margin-top:20px;">Adicionar Lançamento</h3>
+          
+          <input type="text" id="descricaoOutro" placeholder="Descrição (ex: Salário, Uber, Bico)">
+          <input type="number" id="valorOutro" placeholder="Valor">
+          
+          <select id="tipoLancamento" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #ddd;">
+            <option value="receita">Receita (Salário / Bico)</option>
+            <option value="despesa" selected>Despesa (Gasto)</option>
           </select>
-          <select id="catLancamento">
+
+          <select id="categoriaLancamento" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #ddd;">
             <option value="Educação">Educação</option>
             <option value="Alimentação">Alimentação</option>
             <option value="Transporte">Transporte</option>
             <option value="Academia">Academia</option>
             <option value="Outros">Outros</option>
           </select>
-          <button class="btn-acao" onclick="adicionarNovo()">Salvar Lançamento</button>
+
+          <button onclick="adicionarOutro()" style="width:100%; padding:12px; background:#7b2ff7; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">Adicionar</button>
         </div>
       </div>
     </section>
-
-    <section id="transacoes" class="tab">
-      <h2>Histórico do Ano</h2>
-      <div class="box">
-        <ul class="lista" id="listaHistorico">
-          </ul>
-      </div>
-    </section>
-
-    <section id="config" class="tab">
+  
+    <!-- ABA CONFIGURAÇÕES -->
+    <section id="config" class="tab" style="display: none;">
       <h2>Configurações</h2>
-      <div class="box">
-        <button onclick="limparTudo()" style="background:#ff4b4b; color:white; border:none; padding:10px; border-radius:5px; cursor:pointer;">Apagar todos os meses/anos</button>
-        <p style="margin-top:10px; color:#666;">Isso limpará todos os seus dados permanentemente.</p>
+      <div class="box" style="margin-top:20px;">
+        <h3>Gerenciar Dados</h3>
+        <p style="margin-bottom:15px; color:#666;">Apague o histórico de meses e anos anteriores para zerar o sistema.</p>
+        <button onclick="apagarTudo()" style="padding:10px; background:#e83e8c; color:white; border:none; border-radius:8px; cursor:pointer;">Apagar Anos e Meses Anteriores</button>
       </div>
     </section>
   </main>
