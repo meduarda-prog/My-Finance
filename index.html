@@ -1,52 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>MyFinance</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
 <div class="app">
   <aside class="sidebar">
     <h1 class="logo">MyFinance</h1>
     <nav>
-      <button class="nav active" onclick="showTab('dashboard')">💰 Saldo</button>
-      <button class="nav" onclick="showTab('transacoes')">💳 Histórico</button>
-      <button class="nav" onclick="showTab('despesas')">📊 Lançamentos</button>
-      <button class="nav" onclick="showTab('config')">⚙️ Ajustes</button>
+      <button class="nav active" id="btn-dashboard" onclick="showTab('dashboard')">💰 Saldo</button>
+      <button class="nav" id="btn-transacoes" onclick="showTab('transacoes')">💳 Histórico</button>
+      <button class="nav" id="btn-despesas" onclick="showTab('despesas')">📊 Lançamentos</button>
+      <button class="nav" id="btn-config" onclick="showTab('config')">⚙️ Configurações</button>
     </nav>
   </aside>
 
   <main class="content">
     <section id="dashboard" class="tab active">
-      <h2 id="displayMes">Carregando...</h2>
-      <h1 class="saldo-total" id="saldoGeral">R$ 0,00</h1>
+      <h2 class="mes" id="nomeMes">Abril</h2>
+      <h1 class="saldo-total" id="resumoSaldo">R$ 0,00</h1>
 
       <div class="cards">
         <div class="card receita">
-          <span>Receitas</span>
-          <strong id="totalReceitas">R$ 0,00</strong>
+          <span>Receitas (Fixo + Bicos)</span>
+          <strong id="resumoReceitas">R$ 0,00</strong>
         </div>
         <div class="card despesa">
           <span>Despesas</span>
-          <strong id="totalDespesas">R$ 0,00</strong>
+          <strong id="resumoDespesas">R$ 0,00</strong>
         </div>
       </div>
 
       <div class="painel">
         <div class="box">
-          <h3>Distribuição</h3>
+          <h3>Gráfico de Gastos</h3>
           <canvas id="graficoDashboard"></canvas>
         </div>
         <div class="box">
-          <ul class="lista" id="listaResumo"></ul>
+          <ul class="lista" id="listaResumo">
+            </ul>
         </div>
       </div>
     </section>
 
     <section id="despesas" class="tab">
-      <h2>Novo Lançamento</h2>
+      <h2>Lançar Valor</h2>
       <div class="painel">
         <div class="box">
-          <h3>Adicionar Valor</h3>
+          <h3>Entradas e Saídas</h3>
+          <input type="text" id="descLancamento" placeholder="Descrição (Ex: Salário, Bico, Uber)">
+          <input type="number" id="valorLancamento" placeholder="Valor (R$)">
           <select id="tipoLancamento">
-            <option value="receita">Receita (Salário/Bico)</option>
+            <option value="receita">Receita (Ganho)</option>
             <option value="despesa">Despesa (Gasto)</option>
           </select>
-          <input type="text" id="descLancamento" placeholder="Ex: Salário, Aluguel, Uber">
-          <input type="number" id="valorLancamento" placeholder="Valor R$">
           <select id="catLancamento">
             <option value="Educação">Educação</option>
             <option value="Alimentação">Alimentação</option>
@@ -54,39 +66,29 @@
             <option value="Academia">Academia</option>
             <option value="Outros">Outros</option>
           </select>
-          <button onclick="adicionarDados()" style="width:100%; padding:10px; background:#7b2ff7; color:white; border:none; border-radius:8px; cursor:pointer;">Salvar</button>
-        </div>
-        <div class="box">
-           <h3>Dica</h3>
-           <p>Tudo o que você adicionar aqui será refletido no seu saldo e no gráfico do mês atual.</p>
+          <button class="btn-acao" onclick="adicionarNovo()">Salvar Lançamento</button>
         </div>
       </div>
     </section>
 
     <section id="transacoes" class="tab">
-      <h2>Histórico de Movimentações</h2>
-      <div class="box" style="margin-top:20px;">
-        <table style="width:100%; border-collapse: collapse;" id="tabelaTransacoes">
-          <thead>
-            <tr style="text-align: left; border-bottom: 2px solid #eee;">
-              <th style="padding:10px">Descrição</th>
-              <th>Categoria</th>
-              <th>Valor</th>
-              <th>Ação</th>
-            </tr>
-          </thead>
-          <tbody id="corpoTransacoes"></tbody>
-        </table>
+      <h2>Histórico do Ano</h2>
+      <div class="box">
+        <ul class="lista" id="listaHistorico">
+          </ul>
       </div>
     </section>
 
     <section id="config" class="tab">
-      <h2>Configurações do Sistema</h2>
-      <div class="box" style="margin-top:20px;">
-        <h3>Gerenciar Dados</h3>
-        <p>Cuidado: Estas ações não podem ser desfeitas.</p>
-        <button onclick="limparDados()" style="background:#dc3545; color:white; border:none; padding:10px 20px; border-radius:8px; margin-top:10px; cursor:pointer;">Apagar Todos os Dados</button>
+      <h2>Configurações</h2>
+      <div class="box">
+        <button onclick="limparTudo()" style="background:#ff4b4b; color:white; border:none; padding:10px; border-radius:5px; cursor:pointer;">Apagar todos os meses/anos</button>
+        <p style="margin-top:10px; color:#666;">Isso limpará todos os seus dados permanentemente.</p>
       </div>
     </section>
   </main>
 </div>
+
+<script src="app.js"></script>
+</body>
+</html>
