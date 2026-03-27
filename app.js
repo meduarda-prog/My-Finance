@@ -1,9 +1,7 @@
-// Memória do app: inicia zerado se não houver nada salvo
 let storage = JSON.parse(localStorage.getItem('myFinanceDB')) || { entradas: [] };
 let g1 = null;
 let g2 = null;
 
-// Função para formatar dinheiro
 const formatar = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
 function showTab(id) {
@@ -54,7 +52,6 @@ function renderizar() {
             somaCat[e.cat] = (somaCat[e.cat] || 0) + e.valor;
         }
 
-        // Preenche o Histórico (Aba Transações)
         if (lHist) {
             const dataObjeto = new Date(e.data);
             const dataFormatada = dataObjeto.toLocaleDateString('pt-BR');
@@ -62,12 +59,10 @@ function renderizar() {
         }
     });
 
-    // Atualiza os cards e textos
     document.getElementById("txtSaldoGeral").innerText = formatar(rec - desp);
     document.getElementById("txtReceitasTotal").innerText = formatar(rec);
     document.getElementById("txtDespesasTotal").innerText = formatar(desp);
 
-    // Preenche as listas de resumo
     for (const c in somaCat) {
         if (somaCat[c] > 0) {
             const li = `<li><span>${c}</span><strong>${formatar(somaCat[c])}</strong></li>`;
@@ -110,7 +105,6 @@ function apagarTudo() {
     }
 }
 
-// Inicia o app
 document.addEventListener("DOMContentLoaded", () => {
     renderizar();
 });
