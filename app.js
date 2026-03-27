@@ -56,13 +56,11 @@ function renderizar() {
     const hoje = new Date();
     const chaveMesAtual = `${mesesNomes[hoje.getMonth()]} ${hoje.getFullYear()}`;
 
-    // Atualiza o nome do mês no topo do dashboard
     const elMes = document.querySelector(".mes");
     if (elMes) elMes.innerText = mesesNomes[hoje.getMonth()];
 
     const transacoesPorMes = {};
 
-    // 1. ORGANIZANDO POR MÊS E REPLICANDO FIXOS
     storage.entradas.forEach(e => {
         const d = new Date(e.data);
         const chaveOrigem = `${mesesNomes[d.getMonth()]} ${d.getFullYear()}`;
@@ -81,10 +79,9 @@ function renderizar() {
         }
     });
 
-    // 2. CÁLCULOS DO MÊS ATUAL (Soma apenas o que aparece no Dashboard)
     if (transacoesPorMes[chaveMesAtual]) {
         transacoesPorMes[chaveMesAtual].forEach(item => {
-            if (item.tipo === 'receita') rec += item.valor;
+            if (item.tipo === 'Renda') rec += item.valor;
             else {
                 desp += item.valor;
                 const nomeExibicao = (item.cat === "Outros") ? item.desc : item.cat;
@@ -93,7 +90,6 @@ function renderizar() {
         });
     }
 
-    // 3. DESENHANDO AS PASTAS NO HISTÓRICO
     const mesesOrdenados = Object.keys(transacoesPorMes).sort((a, b) => {
         const [m1, a1] = a.split(" "); const [m2, a2] = b.split(" ");
         return new Date(a2, mesesNomes.indexOf(m2)) - new Date(a1, mesesNomes.indexOf(m1));
@@ -121,16 +117,14 @@ function renderizar() {
         });
     }
 
-    // 4. ATUALIZANDO OS CARDS DE SALDO
     const elSaldoGeral = document.querySelector(".saldo-total");
-    const elRecTotal = document.getElementById("txtReceitasTotal");
+    const elRecTotal = document.getElementById("txtRendaTotal");
     const elDespTotal = document.getElementById("txtDespesasTotal");
 
     if (elSaldoGeral) elSaldoGeral.innerText = formatar(rec - desp);
     if (elRecTotal) elRecTotal.innerText = formatar(rec);
     if (elDespTotal) elDespTotal.innerText = formatar(desp);
 
-    // 5. PREENCHENDO LISTAS DE CATEGORIAS COM PORCENTAGEM
     for (const c in somaCat) {
         const perc = desp > 0 ? ((somaCat[c] / desp) * 100).toFixed(1) : 0;
         const liHtml = `<li><span>${c}</span><strong>${formatar(somaCat[c])} <small style="font-weight:normal; color:#666">(${perc}%)</small></strong></li>`;
@@ -138,7 +132,6 @@ function renderizar() {
         if (lDesp) lDesp.innerHTML += liHtml;
     }
 
-    // 6. ATUALIZAÇÃO DOS GRÁFICOS
     if (typeof atualizarGraficos === "function") {
         atualizarGraficos(somaCat);
     }
@@ -151,14 +144,12 @@ function atualizarGraficos(dados) {
             labels: Object.keys(dados),
             datasets: [{
                 data: Object.values(dados),
-                // Adicionei mais cores caso você crie muitos itens em "Outros"
                 backgroundColor: ["#7b2ff7", "#ff6384", "#36a2eb", "#ffcd56", "#4bc0c0", "#9966ff", "#ff9f40", "#c9cbcf"]
             }]
         },
         options: { 
             plugins: { 
                 legend: { display: false },
-                // Isso faz a porcentagem aparecer quando você coloca o mouse sobre o gráfico
                 tooltip: {
                     callbacks: {
                         label: function(context) {
