@@ -1,134 +1,116 @@
-// Estado global da aplicação
-let dados = JSON.parse(localStorage.getItem('myFinanceData')) || {
-    transacoes: []
-};
+// Memória do app: inicia zerado se não houver nada salvo
+let storage = JSON.parse(localStorage.getItem('myFinanceDB')) || { entradas: [] };
+let g1 = null;
+let g2 = null;
 
-let meuGrafico = null;
-
-// Formatador de moeda
+// Função para formatar dinheiro
 const formatar = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
 function showTab(id) {
-    document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
-    document.querySelectorAll(".nav").forEach(btn => btn.classList.remove("active"));
+    document.querySelectorAll(".tab").forEach(t => t.style.display = "none");
+    document.querySelectorAll(".nav").forEach(n => n.classList.remove("active"));
     
-    document.getElementById(id).classList.add("active");
-    // Adiciona classe active no botão clicado (lógica simplificada)
-    event.currentTarget.classList.add("active");
-
-    if(id === 'dashboard' || id === 'transacoes') atualizarInterface();
+    document.getElementById(id).style.display = "block";
+    document.getElementById('nav-' + id).classList.add("active");
+    
+    renderizar();
 }
 
-function adicionarDados() {
-    const desc = document.getElementById("descLancamento").value;
-    const valor = parseFloat(document.getElementById("valorLancamento").value);
+function adicionarOutro() {
+    const desc = document.getElementById("descricaoOutro").value;
+    const valor = parseFloat(document.getElementById("valorOutro").value);
     const tipo = document.getElementById("tipoLancamento").value;
-    const cat = document.getElementById("catLancamento").value;
+    const cat = document.getElementById("categoriaLancamento").value;
 
-    if (!desc || !valor) return alert("Preencha os campos!");
+    if (!desc || !valor) return alert("Preencha descrição e valor!");
 
-    const novaTransacao = {
-        id: Date.now(),
-        descricao: desc,
-        valor: tipo === 'despesa' ? -valor : valor,
-        categoria: cat,
-        data: new Date().toISOString()
-    };
+    storage.entradas.push({ desc, valor, tipo, cat, data: new Date().toISOString() });
+    localStorage.setItem('myFinanceDB', JSON.stringify(storage));
 
-    dados.transacoes.push(novaTransacao);
-    localStorage.setItem('myFinanceData', JSON.stringify(dados));
-    
-    // Limpar campos
-    document.getElementById("descLancamento").value = "";
-    document.getElementById("valorLancamento").value = "";
-    
-    alert("Lançado com sucesso!");
-    atualizarInterface();
+    document.getElementById("descricaoOutro").value = "";
+    document.getElementById("valorOutro").value = "";
+    alert("Lançamento guardado!");
+    renderizar();
 }
 
-function atualizarInterface() {
-    const resumoCat = {};
-    let totalReceitas = 0;
-    let totalDespesas = 0;
+function renderizar() {
+    let rec = 0;
+    let desp = 0;
+    let somaCat = { "Educação": 0, "Alimentação": 0, "Transporte": 0, "Academia": 0, "Outros": 0 };
+    
+    const lSaldo = document.getElementById("listaResumoSaldo");
+    const lDesp = document.getElementById("listaDespesasFim");
+    const lHist = document.getElementById("listaHistorico");
 
-    // Processar transações
-    dados.transacoes.forEach(t => {
-        if (t.valor > 0) {
-            totalReceitas += t.valor;
+    if (lSaldo) lSaldo.innerHTML = "";
+    if (lDesp) lDesp.innerHTML = "";
+    if (lHist) lHist.innerHTML = "";
+
+    storage.entradas.forEach(e => {
+        if (e.tipo === 'receita') {
+            rec += e.valor;
         } else {
-            totalDespesas += Math.abs(t.valor);
-            resumoCat[t.categoria] = (resumoCat[t.categoria] || 0) + Math.abs(t.valor);
+            desp += e.valor;
+            somaCat[e.cat] = (somaCat[e.cat] || 0) + e.valor;
+        }
+
+        // Preenche o Histórico (Aba Transações)
+        if (lHist) {
+            const dataObjeto = new Date(e.data);
+            const dataFormatada = dataObjeto.toLocaleDateString('pt-BR');
+            lHist.innerHTML += `<li><span>${e.desc} (${dataFormatada})</span><strong style="color: ${e.tipo === 'receita' ? '#28a745' : '#e83e8c'}">${formatar(e.valor)}</strong></li>`;
         }
     });
 
-    // Atualizar Números
-    document.getElementById("saldoGeral").innerText = formatar(totalReceitas - totalDespesas);
-    document.getElementById("totalReceitas").innerText = formatar(totalReceitas);
-    document.getElementById("totalDespesas").innerText = formatar(totalDespesas);
-    document.getElementById("displayMes").innerText = new Intl.DateTimeFormat('pt-BR', {month: 'long'}).format(new Date());
+    // Atualiza os cards e textos
+    document.getElementById("txtSaldoGeral").innerText = formatar(rec - desp);
+    document.getElementById("txtReceitasTotal").innerText = formatar(rec);
+    document.getElementById("txtDespesasTotal").innerText = formatar(desp);
 
-    atualizarGrafico(resumoCat);
-    atualizarTabela();
-    atualizarListaResumo(resumoCat, totalDespesas);
+    // Preenche as listas de resumo
+    for (const c in somaCat) {
+        if (somaCat[c] > 0) {
+            const li = `<li><span>${c}</span><strong>${formatar(somaCat[c])}</strong></li>`;
+            if (lSaldo) lSaldo.innerHTML += li;
+            if (lDesp) lDesp.innerHTML += li;
+        }
+    }
+
+    atualizarGraficos(somaCat);
 }
 
-function atualizarGrafico(resumo) {
-    const ctx = document.getElementById("graficoDashboard").getContext("2d");
-    const labels = Object.keys(resumo);
-    const valores = Object.values(resumo);
-
-    if (meuGrafico) meuGrafico.destroy();
-
-    meuGrafico = new Chart(ctx, {
-        type: 'doughnut',
+function atualizarGraficos(dados) {
+    const config = {
+        type: "doughnut",
         data: {
-            labels: labels,
+            labels: Object.keys(dados),
             datasets: [{
-                data: valores,
-                backgroundColor: ["#7b2ff7", "#ff6384", "#36a2eb", "#ffcd56", "#4bc0c0", "#9966ff"]
+                data: Object.values(dados),
+                backgroundColor: ["#7b2ff7", "#ff6384", "#36a2eb", "#ffcd56", "#4bc0c0"]
             }]
         },
         options: { plugins: { legend: { display: false } } }
-    });
+    };
+
+    if (g1) g1.destroy();
+    if (g2) g2.destroy();
+
+    const ctx1 = document.getElementById("grafico");
+    const ctx2 = document.getElementById("graficoDespesas");
+
+    if (ctx1) g1 = new Chart(ctx1, config);
+    if (ctx2) g2 = new Chart(ctx2, config);
 }
 
-function atualizarTabela() {
-    const corpo = document.getElementById("corpoTransacoes");
-    corpo.innerHTML = "";
-
-    dados.transacoes.reverse().forEach(t => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td style="padding:10px">${t.descricao}</td>
-            <td>${t.categoria}</td>
-            <td style="color: ${t.valor > 0 ? '#28a745' : '#e83e8c'}">${formatar(t.valor)}</td>
-            <td><button onclick="deletarItem(${t.id})" style="border:none; background:none; cursor:pointer">🗑️</button></td>
-        `;
-        corpo.appendChild(tr);
-    });
-}
-
-function atualizarListaResumo(resumo, total) {
-    const lista = document.getElementById("listaResumo");
-    lista.innerHTML = "";
-    for (let cat in resumo) {
-        const perc = ((resumo[cat] / total) * 100).toFixed(0);
-        lista.innerHTML += `<li><span>${cat}</span> <strong>${perc}%</strong></li>`;
+function apagarTudo() {
+    if (confirm("Deseja apagar todos os dados de anos e meses anteriores?")) {
+        localStorage.removeItem('myFinanceDB');
+        storage = { entradas: [] };
+        renderizar();
     }
 }
 
-function deletarItem(id) {
-    dados.transacoes = dados.transacoes.filter(t => t.id !== id);
-    localStorage.setItem('myFinanceData', JSON.stringify(dados));
-    atualizarInterface();
-}
-
-function limparDados() {
-    if(confirm("Deseja apagar TODO o histórico?")) {
-        localStorage.clear();
-        location.reload();
-    }
-}
-
-// Iniciar
-document.addEventListener("DOMContentLoaded", atualizarInterface);
+// Inicia o app
+document.addEventListener("DOMContentLoaded", () => {
+    renderizar();
+});
