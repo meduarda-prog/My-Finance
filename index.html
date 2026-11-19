@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <title>MyFinance</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<link rel="stylesheet" href="estilo.css">
+<link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -73,12 +73,12 @@
 <input type="text" id="descricaoOutro" placeholder="Descrição (ex: Salário, Uber, Bico)">
 <input type="number" id="valorOutro" step="0.01" placeholder="Valor">
 
-<select id="tipoLancamento" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #ddd;">
+<select id="tipoLancamento">
 <option value="renda">Renda (Salário / Bico)</option>
 <option value="despesa" selected>Despesa (Gasto)</option>
 </select>
 
-<select id="categoriaLancamento" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #ddd;">
+<select id="categoriaLancamento">
 <option value="Educação">Educação</option>
 <option value="Alimentação">Alimentação</option>
 <option value="Transporte">Transporte</option>
@@ -87,7 +87,7 @@
 </select>
 
 <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
-<input type="checkbox" id="itemFixo" style="width: 18px; height: 18px; cursor: pointer;">
+<input type="checkbox" id="itemFixo" style="width: 18px; height: 18px; cursor: pointer; margin: 0;">
 <label for="itemFixo" style="color: #666; font-size: 14px; cursor: pointer;">Definir como Fixo (Todo mês)</label>
 </div>
 
@@ -103,13 +103,13 @@
 <h3>Aparência e Dados</h3>
 
 <div style="margin: 15px 0; display: flex; align-items: center; gap: 8px;">
-<input type="checkbox" id="toggleDarkMode" onchange="alternarTemaEscuro()" style="width: 18px; height: 18px; cursor: pointer;">
+<input type="checkbox" id="toggleDarkMode" onchange="alternarTemaEscuro()" style="width: 18px; height: 18px; cursor: pointer; margin: 0;">
 <label for="toggleDarkMode" style="color: #666; font-size: 14px; cursor: pointer;">Tema Escuro</label>
 </div>
 
 <div style="margin-bottom: 15px;">
 <label for="prazoLimpeza" style="display:block; margin-bottom:6px; color:#666; font-size:14px;">Limpeza automática:</label>
-<select id="prazoLimpeza" onchange="salvarConfigLimpeza()" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd;">
+<select id="prazoLimpeza" onchange="salvarConfigLimpeza()">
 <option value="0">Não apagar automaticamente</option>
 <option value="3">Apagar itens com mais de 3 meses</option>
 <option value="6">Apagar itens com mais de 6 meses</option>
