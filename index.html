@@ -1,108 +1,140 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <title>MyFinance</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="UTF-8" />
+<title>MyFinance</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" href="estilo.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
 <div class="app">
-  <aside class="sidebar">
-    <h1 class="logo">MyFinance</h1>
-    <nav>
-      <button class="nav active" id="nav-dashboard" onclick="showTab('dashboard')">💰 Saldo</button>
-      <button class="nav" id="nav-transacoes" onclick="showTab('transacoes')">💳 Transações</button>
-      <button class="nav" id="nav-despesas" onclick="showTab('despesas')">📊 Despesas</button>
-      <button class="nav" id="nav-config" onclick="showTab('config')">⚙️ Configurações</button>
-    </nav>
-  </aside>
+<aside class="sidebar">
+<h1 class="logo">MyFinance</h1>
+<nav>
+<button class="nav active" id="nav-dashboard" onclick="showTab('dashboard')">💰 Saldo</button>
+<button class="nav" id="nav-transacoes" onclick="showTab('transacoes')">💳 Transações</button>
+<button class="nav" id="nav-despesas" onclick="showTab('despesas')">📊 Despesas</button>
+<button class="nav" id="nav-config" onclick="showTab('config')">⚙️ Configurações</button>
+</nav>
+</aside>
 
-  <main class="content">
-    <!-- ABA SALDO (DASHBOARD) -->
-    <section id="dashboard" class="tab active" style="display: block;">
-      <h2 class="mes" id="nomeMes">Abril</h2>
-      <h1 class="saldo-total" id="txtSaldoGeral">R$ 0,00</h1>
+<main class="content">
+<!-- ABA SALDO (DASHBOARD) -->
+<section id="dashboard" class="tab active" style="display: block;">
+<h2 class="mes" id="nomeMes">Novembro</h2>
+<h1 class="saldo-total" id="txtSaldoGeral">R$ 0,00</h1>
 
-      <div class="cards">
-        <div class="card renda">
-          <span>Renda</span>
-          <strong id="txtRendaTotal">R$ 0,00</strong>
-        </div>
-        <div class="card despesa">
-          <span>Despesas</span>
-          <strong id="txtDespesasTotal">R$ 0,00</strong>
-        </div>
-      </div>
-
-      <div class="painel">
-        <div class="box">
-          <h3>Despesas por categoria</h3>
-          <canvas id="grafico"></canvas>
-        </div>
-        <div class="box">
-          <ul class="lista" id="listaResumoSaldo">
-            <!-- Preenchido pelo JS -->
-          </ul>
-        </div>
-      </div>
-    </section>
-    
-    <section id="transacoes" class="tab" style="display: none;">
-      <h2>Transações</h2>
-      <div class="box" style="margin-top:20px;">
-        <ul class="lista" id="listaHistorico">
-        </ul>
-      </div>
-    </section>
-
-    <section id="despesas" class="tab" style="display: none;">
-      <h2>Despesas</h2>
-      <div class="painel">
-        <div class="box">
-          <h3>Despesas por categoria</h3>
-          <canvas id="graficoDespesas"></canvas>
-        </div>
-
-        <div class="box">
-          <ul class="lista" id="listaDespesasFim"></ul>
-          
-          <h3 style="margin-top:20px;">Adicionar Lançamento</h3>
-          
-          <input type="text" id="descricaoOutro" placeholder="Descrição (ex: Salário, Uber, Bico)">
-          <input type="number" id="valorOutro" placeholder="Valor">
-          
-          <select id="tipoLancamento" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #ddd;">
-            <option value="renda">renda (Salário / Bico)</option>
-            <option value="despesa" selected>Despesa (Gasto)</option>
-          </select>
-
-         <select id="categoriaLancamento" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #ddd;">
-  <option value="Educação">Educação</option>
-  <option value="Alimentação">Alimentação</option>
-  <option value="Transporte">Transporte</option>
-  <option value="Academia">Academia</option>
-  <option value="Outros">Outros</option>
-</select>
-
-<div style="margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
-  <input type="checkbox" id="itemFixo" style="width: 18px; height: 18px; cursor: pointer;">
-  <label for="itemFixo" style="color: #666; font-size: 14px; cursor: pointer;">Definir como Fixo (Todo mês)</label>
+<div class="cards">
+<div class="card renda">
+<span>Renda</span>
+<strong id="txtRendaTotal">R$ 0,00</strong>
+</div>
+<div class="card despesa">
+<span>Despesas</span>
+<strong id="txtDespesasTotal">R$ 0,00</strong>
+</div>
 </div>
 
-<button onclick="adicionarOutro()" style="width:100%; padding:12px; background:#7b2ff7; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">Adicionar</button>
-  
-    <section id="config" class="tab" style="display: none;">
-      <h2>Configurações</h2>
-      <div class="box" style="margin-top:20px;">
-        <h3>Gerenciar Dados</h3>
-        <p style="margin-bottom:15px; color:#666;">Apague o histórico de meses e anos anteriores para zerar o sistema.</p>
-        <button onclick="apagarTudo()" style="padding:10px; background:#e83e8c; color:white; border:none; border-radius:8px; cursor:pointer;">Apagar Anos e Meses Anteriores</button>
-      </div>
-    </section>
-  </main>
+<div class="painel">
+<div class="box">
+<h3>Despesas por categoria</h3>
+<canvas id="grafico"></canvas>
+</div>
+<div class="box">
+<h3>Resumo de gastos</h3>
+<ul class="lista" id="listaResumoSaldo"></ul>
+</div>
+</div>
+</section>
+
+<!-- ABA TRANSAÇÕES -->
+<section id="transacoes" class="tab" style="display: none;">
+<h2>Transações</h2>
+<div class="box" style="margin-top:20px;">
+<div id="listaHistorico"></div>
+</div>
+</section>
+
+<!-- ABA DESPESAS / LANÇAMENTOS -->
+<section id="despesas" class="tab" style="display: none;">
+<h2>Despesas & Lançamentos</h2>
+<div class="painel">
+<div class="box">
+<h3>Despesas por categoria</h3>
+<canvas id="graficoDespesas"></canvas>
+<ul class="lista" id="listaDespesasFim" style="margin-top:20px;"></ul>
+</div>
+
+<div class="box">
+<h3>Adicionar Lançamento</h3>
+
+<input type="text" id="descricaoOutro" placeholder="Descrição (ex: Salário, Uber, Bico)">
+<input type="number" id="valorOutro" step="0.01" min="0" placeholder="Valor (ex: 150.00)">
+
+<select id="tipoLancamento" class="campo-select">
+<option value="renda">Renda (Salário / Bico / Demissão)</option>
+<option value="despesa" selected>Despesa (Gasto)</option>
+</select>
+
+<select id="categoriaLancamento" class="campo-select">
+<option value="Educação">Educação</option>
+<option value="Alimentação">Alimentação</option>
+<option value="Transporte">Transporte</option>
+<option value="Academia">Academia</option>
+<option value="Outros">Outros (usa a descrição)</option>
+</select>
+
+<div class="checkbox-linha">
+<input type="checkbox" id="itemFixo">
+<label for="itemFixo">Definir como Fixo (Todo mês)</label>
+</div>
+
+<button onclick="adicionarOutro()" class="btn-primario">Adicionar</button>
+</div>
+</div>
+</section>
+
+<!-- ABA CONFIGURAÇÕES -->
+<section id="config" class="tab" style="display: none;">
+<h2>Configurações</h2>
+
+<div class="painel" style="margin-top:20px;">
+<div class="box">
+<h3>Aparência e Dados</h3>
+
+<div class="checkbox-linha" style="margin-top:15px;">
+<input type="checkbox" id="toggleDarkMode" onchange="alternarTemaEscuro()">
+<label for="toggleDarkMode">Ativar Tema Escuro (Dark Mode)</label>
+</div>
+
+<div style="margin-top:20px;">
+<label for="prazoLimpeza" class="label-bloco">Limpeza automática de lançamentos antigos:</label>
+<select id="prazoLimpeza" class="campo-select" onchange="salvarConfigLimpeza()">
+<option value="0">Não apagar automaticamente</option>
+<option value="3">Apagar itens com mais de 3 meses</option>
+<option value="6">Apagar itens com mais de 6 meses</option>
+<option value="12">Apagar itens com mais de 12 meses</option>
+</select>
+</div>
+</div>
+
+<div class="box">
+<h3>Backup e Reset</h3>
+<p class="texto-apoio">Salve um backup dos seus dados ou limpe registros antigos/todos os dados.</p>
+
+<button onclick="exportarBackup()" class="btn-secundario" style="margin-bottom:10px;">
+📥 Exportar Backup (JSON)
+</button>
+
+<button onclick="apagarTudo()" class="btn-perigo">
+🗑️ Apagar Todos os Dados
+</button>
+</div>
+</div>
+</section>
+</main>
 </div>
 
 <script src="app.js"></script>
