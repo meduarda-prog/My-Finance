@@ -188,6 +188,14 @@ return new Date(a2, mesesNomes.indexOf(m2)) - new Date(a1, mesesNomes.indexOf(m1
 
 if (lHist) {
 mesesOrdenados.forEach(mes => {
+const itensDoMes = transacoesPorMes[mes];
+const totalRendaMes = itensDoMes
+.filter(i => ehRenda(i.tipo))
+.reduce((acc, i) => acc + Number(i.valor), 0);
+const totalDespesaMes = itensDoMes
+.filter(i => !ehRenda(i.tipo))
+.reduce((acc, i) => acc + Number(i.valor), 0);
+
 const header = document.createElement("div");
 header.className = "mes-header";
 header.innerHTML = `<span>${mes}</span> ${mes === chaveMesAtual ? '<small>(Mês Atual)</small>' : ''}`;
@@ -196,13 +204,17 @@ lHist.appendChild(header);
 const ul = document.createElement("ul");
 ul.className = "lista";
 
-transacoesPorMes[mes].forEach(t => {
+itensDoMes.forEach(t => {
 const li = document.createElement("li");
 const isR = ehRenda(t.tipo);
+const baseTotal = isR ? totalRendaMes : totalDespesaMes;
+const percItem = baseTotal > 0 ? ((Number(t.valor) / baseTotal) * 100).toFixed(1) : "0.0";
+
 li.innerHTML = `
 <span>${t.desc} ${t.fixo ? '🔄' : ''} <small>(${t.cat})</small></span>
 <div>
 <strong style="color: ${isR ? '#28a745' : '#e83e8c'}">${formatar(t.valor)}</strong>
+<small style="opacity:0.75; margin-left:4px;">(${percItem}%)</small>
 ${!t.replicado ? `
 <button class="btn-mini" onclick="editarItem(${t.id})" title="Editar">✏️</button>
 <button class="btn-mini" onclick="excluirItem(${t.id})" title="Excluir">🗑️</button>
@@ -215,7 +227,6 @@ lHist.appendChild(ul);
 });
 }
 
-// Lista de lançamentos também na aba Despesas para editar/excluir direto na tela
 if (lDesp && transacoesPorMes[chaveMesAtual]) {
 transacoesPorMes[chaveMesAtual].forEach(item => {
 const isR = ehRenda(item.tipo);
