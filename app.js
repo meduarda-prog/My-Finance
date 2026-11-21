@@ -308,71 +308,74 @@ storage = { entradas: [] };
 renderizar();
 }
 }
+
 function carregarDadosDemo() {
-  const agora = new Date();
-  const ano = agora.getFullYear();
-  const mes = agora.getMonth();
+const agora = new Date();
+const ano = agora.getFullYear();
+const mes = agora.getMonth();
 
-  const dataNoMesAtual = (dia) => new Date(ano,mes, Math.min(dia,28)).toISOStrinh();
+const dataNoMesAtual = (dia) => new Date(ano, mes, Math.min(dia, 28)).toISOString();
 
-const itensDemo = [
-  {
-    id: 1001,
-    desc: "Salário Mensal",
-    valor: 4500,
-    tipo: "renda",
-    cat: "Outros",
-    fixo: false,
-    data: dataNoMeAtual(5)
-  },
-  }
-    id: 1002,
-    desc:" Supermercado do Mês",
-    valor: 780,
-    típo: "desoesa",
-    cat: "Alimentação",
-    fixo: false,
-    data: dataNoMesAtual(7)
+storage = {
+entradas: [
+{
+id: 1001,
+desc: "Salário Mensal",
+valor: 4500,
+tipo: "renda",
+cat: "Outros",
+fixo: false,
+data: dataNoMesAtual(5)
 },
-}
-    id: 1003,
-    desc: "Passe / Transporte",
-    valor: 290,
-    tipo: "depesa",
-    cat: "Transporte",
-    fixo: true,
-    data: dataNoMeAtual(10)
+{
+id: 1002,
+desc: "Supermercado do Mês",
+valor: 780,
+tipo: "despesa",
+cat: "Alimentação",
+fixo: false,
+data: dataNoMesAtual(7)
 },
-}
-    id: 1004,
-    desc: "Curso de Iglês / Tech",
-    valor: 680,
-    tipo: "despesa",
-    cat: "Educação",
-    fixo: false,
-    data: dataNoMeAtual(15)
+{
+id: 1003,
+desc: "Passe / Transporte",
+valor: 290,
+tipo: "despesa",
+cat: "Transporte",
+fixo: true,
+data: dataNoMesAtual(10)
 },
-}
+{
+id: 1004,
+desc: "Curso de Inglês / Tech",
+valor: 680,
+tipo: "despesa",
+cat: "Educação",
+fixo: false,
+data: dataNoMesAtual(15)
+},
+{
 id: 1005,
-    desc: "Renda Extra / Freelance",
-    valor: 900,
-    tipo: "renda",
-    cat: "Outros",
-    fixo: false,
-    data: dataNoMeAtual(18)
- }
-];
+desc: "Renda Extra / Freelance",
+valor: 900,
+tipo: "renda",
+cat: "Outros",
+fixo: false,
+data: dataNoMesAtual(18)
+}
+]
+};
 
-storage.entradas = itensDemo;
 salvarTudo();
 renderizar();
-alert("Dados de exemplo carregados!";
+alert("Dados de exemplo carregados!");
 }
-function LimparDadosDemo() {
-  if (!confirm("Deseja limpar os dados atuais e deixar o app em branco?")) return;
-  localStorage.removeItem('myfinanceDB');
-  storage = { entradas [] };
-  rederizar();
+
+function limparDadosDemo() {
+if (!confirm("Deseja limpar os dados atuais e deixar o app em branco?")) return;
+localStorage.removeItem('myFinanceDB');
+storage = { entradas: [] };
+renderizar();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
